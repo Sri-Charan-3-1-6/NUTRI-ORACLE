@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUTRI-ORACLE</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050508;
+            --surface: #0d0d14;
+            --card: #12121e;
+            --primary: #00e5a0;
+            --danger: #ff3d3d;
+            --warning: #ffaa00;
+            --purple: #9d4edd;
+            --text: #e8e8f0;
+            --muted: #6b7280;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .cinzel { font-family: 'Cinzel', serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        header {
+            width: 100%;
+            background-color: #020205;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 229, 160, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            color: var(--primary);
+            font-size: 28px;
+            text-shadow: 0 0 10px rgba(0, 229, 160, 0.4);
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary);
+            color: var(--bg);
+            padding: 8px;
+            z-index: 100;
+            transition: top 0.2s;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: var(--muted);
+            font-variant: small-caps;
+            letter-spacing: 2px;
+            margin-top: 4px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--primary);
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        main {
+            flex: 1;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--surface);
+            padding-bottom: 15px;
+        }
+
+        .tab {
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .tab:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            text-shadow: 0 0 8px rgba(0, 229, 160, 0.5);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -16px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Input section */
+        .input-section {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .input-section:hover, .input-section:focus-within {
+            transform: translateY(-2px);
+            border-color: rgba(0, 229, 160, 0.3);
+            box-shadow: 0 0 20px rgba(0, 229, 160, 0.1);
+        }
+
+        .textarea-wrap {
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            background: var(--card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            color: var(--text);
+            font-size: 16px;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 229, 160, 0.2);
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            background: var(--card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 229, 160, 0.2);
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: rgba(0, 229, 160, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 15px rgba(0, 229, 160, 0.1);
+        }
+
+        .btn-primary:hover, .btn-primary:focus {
+            background: var(--primary);
+            color: var(--bg);
+            box-shadow: 0 0 25px rgba(0, 229, 160, 0.4);
+            transform: translateY(-2px);
+            outline: none;
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 50px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--card);
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .upload-area:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 4px;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(0, 229, 160, 0.05);
+            box-shadow: 0 0 20px rgba(0, 229, 160, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        #file-input {
+            opacity: 0;
+            position: absolute;
+            z-index: -1;
+            width: 1px;
+            height: 1px;
+        }
+        
+        #image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 5, 8, 0.95);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .hexagon-spinner {
+            width: 100px;
+            height: 100px;
+            border: 2px solid var(--primary);
+            margin-bottom: 30px;
+            animation: spin 3s linear infinite;
+            position: relative;
+        }
+
+        .hexagon-spinner::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            border: 2px solid transparent;
+            border-right-color: var(--purple);
+            animation: spin 2s linear infinite reverse;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--primary);
+            font-size: 20px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(0, 229, 160, 0.5);
+            height: 30px;
+        }
+
+        /* Results */
+        .results {
+            margin-top: 50px;
+            display: none;
+        }
+        
+        .results.active {
+            display: block;
+        }
+
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .verdict-banner {
+            width: 100%;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        .verdict-text {
+            font-size: 24px;
+            position: relative;
+            z-index: 2;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+
+        /* Orbs */
+        .orbs-row {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .orb-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .orb {
+            width: 160px;
+            height: 160px;
+            position: relative;
+        }
+
+        .orb svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        
+        .orb-bg {
+            fill: none;
+            stroke: var(--surface);
+            stroke-width: 8;
+        }
+
+        .orb-progress {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 440;
+            stroke-dashoffset: 440;
+            transition: stroke-dashoffset 2s ease-out;
+        }
+
+        .orb-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .orb-label {
+            font-size: 14px;
+            color: var(--muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Cards */
+        .section-card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .section-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .card-header {
+            font-size: 20px;
+            color: var(--text);
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        /* Deficiencies */
+        .pill-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .pill {
+            background: rgba(255, 170, 0, 0.1);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        /* Timeline */
+        .timeline-item {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+        }
+        
+        .timeline-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .severity-badge {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            height: fit-content;
+        }
+
+        .sev-high { background: rgba(255,61,61,0.2); color: var(--danger); border: 1px solid var(--danger); }
+        .sev-medium { background: rgba(255,170,0,0.2); color: var(--warning); border: 1px solid var(--warning); }
+        .sev-low { background: rgba(0,229,160,0.2); color: var(--primary); border: 1px solid var(--primary); }
+
+        .risk-details {
+            flex: 1;
+        }
+
+        .risk-name {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .risk-meta {
+            font-size: 14px;
+            color: var(--muted);
+        }
+        
+        .risk-tip {
+            font-size: 14px;
+            color: var(--primary);
+            margin-top: 8px;
+            display: none;
+            font-style: italic;
+        }
+        
+        .timeline-item:hover .risk-tip, .timeline-item:focus-within .risk-tip {
+            display: block;
+        }
+
+        /* Recipes */
+        .recipes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .recipe-card {
+            background: var(--card);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .recipe-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 229, 160, 0.1);
+        }
+
+        .recipe-name {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .recipe-meta {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .badge-time { background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+        .badge-health { color: var(--primary); font-size: 12px; display: flex; align-items: center; }
+
+        .recipe-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            background: rgba(255,255,255,0.05);
+            color: var(--muted);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .steps-toggle {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 0;
+            font-weight: bold;
+        }
+        
+        .steps-toggle:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+
+        .recipe-steps {
+            margin-top: 15px;
+            display: none;
+            padding-left: 20px;
+        }
+
+        .recipe-steps.active {
+            display: block;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .recipe-steps li {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        /* Body Timeline */
+        .body-timeline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .bt-card {
+            background: var(--card);
+            padding: 25px;
+            border-radius: 12px;
+            border-top: 3px solid var(--primary);
+            text-align: center;
+        }
+
+        .bt-card.orange { border-top-color: var(--warning); }
+        .bt-card.red { border-top-color: var(--danger); }
+
+        .bt-icon {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .bt-title {
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .bt-text {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Meal Plan */
+        .meal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .meal-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 2px solid var(--purple);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meal-time {
+            color: var(--purple);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .meal-name {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .meal-why {
+            font-size: 13px;
+            color: var(--muted);
+            font-style: italic;
+            margin-top: auto;
+            padding-top: 10px;
+        }
+
+        .meal-ingredients {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--danger);
+            color: #fff;
+            padding: 15px 25px;
+            border-radius: 8px;
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(255,61,61,0.3);
+            font-weight: bold;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--muted);
+            font-size: 14px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            margin-top: auto;
+        }
+        
+        h1 { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+
+        @media(max-width: 768px) {
+            .controls { flex-direction: column; gap: 15px; }
+            .orbs-row { flex-direction: column; align-items: center; }
+            .header { padding: 15px 20px; }
+            .logo { font-size: 22px; }
+        }
+        @media(max-width: 480px) {
+            .hero-title { font-size: 28px; }
+            .tab { font-size: 14px; }
+            .section-card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header>
+        <a href="/" class="logo cinzel" aria-label="NUTRI-ORACLE Home">
+            ⬡ NUTRI-ORACLE
+            <span class="subtitle">The Oracle Sees What You Cannot</span>
+        </a>
+        <div class="status" aria-label="Oracle Status: Online">
+            <div class="dot" aria-hidden="true"></div>
+            <span>Oracle Online</span>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <h1>NUTRI-ORACLE Nutritional Intelligence System</h1>
+        
+        <div class="tabs" role="tablist">
+            <button class="tab active" id="tab-type" role="tab" aria-selected="true" aria-controls="section-type" onclick="switchTab('type')">TYPE INGREDIENTS</button>
+            <button class="tab" id="tab-scan" role="tab" aria-selected="false" aria-controls="section-scan" onclick="switchTab('scan')">SCAN YOUR FRIDGE</button>
+        </div>
+
+        <!-- Text Input -->
+        <div class="input-section" id="section-type" role="tabpanel" aria-labelledby="tab-type">
+            <div class="textarea-wrap">
+                <textarea id="ingredients-input" placeholder="Enter ingredients separated by commas... (e.g. rice, eggs, tomatoes, onion)" aria-label="Ingredients list"></textarea>
+            </div>
+            
+            <div class="controls">
+                <div class="input-group">
+                    <label for="age-input">Age</label>
+                    <input type="number" id="age-input" value="25" min="1" max="120" aria-label="Age">
+                </div>
+                <div class="input-group">
+                    <label for="goal-input">Goal</label>
+                    <select id="goal-input" aria-label="Nutritional Goal">
+                        <option value="balanced">Balanced</option>
+                        <option value="weight-loss">Weight Loss</option>
+                        <option value="muscle-gain">Muscle Gain</option>
+                        <option value="energy-boost">Energy Boost</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="consultOracle('type')" aria-label="Analyze ingredients text">CONSULT THE ORACLE &rarr;</button>
+        </div>
+
+        <!-- Image Input -->
+        <div class="input-section" id="section-scan" style="display: none;" role="tabpanel" aria-labelledby="tab-scan">
+            <div class="upload-area" id="drop-zone" tabindex="0" role="button" aria-label="Upload fridge photo" onclick="document.getElementById('file-input').click()" onkeydown="if(event.key === 'Enter' || event.key === ' ') { document.getElementById('file-input').click(); event.preventDefault(); }">
+                <div class="upload-icon" aria-hidden="true">📷</div>
+                <p>Drop your fridge photo here or click to upload</p>
+                <input type="file" id="file-input" accept="image/*" aria-hidden="true" tabindex="-1">
+                <img id="image-preview" src="" alt="Image Preview">
+            </div>
+            <button class="btn-primary" onclick="consultOracle('scan')" aria-label="Analyze fridge image">CONSULT THE ORACLE &rarr;</button>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading-overlay" id="loading" aria-hidden="true" aria-live="assertive">
+            <div class="hexagon-spinner"></div>
+            <div class="loading-text cinzel" id="loading-msg">Oracle is reading your kitchen...</div>
+        </div>
+
+        <!-- Results -->
+        <div class="results" id="results" aria-live="polite">
+            
+            <div class="verdict-banner fade-in-up" id="verdict-banner" style="animation-delay: 0.1s" role="alert">
+                <div class="verdict-text cinzel" id="verdict-text">VERDICT GOES HERE</div>
+            </div>
+
+            <div class="orbs-row fade-in-up" style="animation-delay: 0.2s">
+                <div class="orb-container">
+                    <div class="orb" aria-label="Vitality Score ring animation">
+                        <svg viewBox="0 0 160 160" aria-hidden="true">
+                            <circle class="orb-bg" cx="80" cy="80" r="70"></circle>
+                            <circle class="orb-progress" id="vitality-ring" cx="80" cy="80" r="70" stroke="var(--primary)"></circle>
+                        </svg>
+                        <div class="orb-value mono" id="vitality-val" style="color: var(--primary)">0</div>
+                    </div>
+                    <div class="orb-label">Vitality Score</div>
+                </div>
+
+                <div class="orb-container">
+                    <div class="orb" aria-label="Health Risks ring animation">
+                        <svg viewBox="0 0 160 160" aria-hidden="true">
+                            <circle class="orb-bg" cx="80" cy="80" r="70"></circle>
+                            <circle class="orb-progress" id="risks-ring" cx="80" cy="80" r="70" stroke="var(--danger)"></circle>
+                        </svg>
+                        <div class="orb-value mono" id="risks-val" style="color: var(--danger)">0</div>
+                    </div>
+                    <div class="orb-label">Health Risks</div>
+                </div>
+
+                <div class="orb-container">
+                    <div class="orb" aria-label="Recipes Found ring animation">
+                        <svg viewBox="0 0 160 160" aria-hidden="true">
+                            <circle class="orb-bg" cx="80" cy="80" r="70"></circle>
+                            <circle class="orb-progress" id="recipes-ring" cx="80" cy="80" r="70" stroke="var(--purple)"></circle>
+                        </svg>
+                        <div class="orb-value mono" id="recipes-val" style="color: var(--purple)">0</div>
+                    </div>
+                    <div class="orb-label">Recipes Found</div>
+                </div>
+            </div>
+
+            <div class="section-card fade-in-up" style="animation-delay: 0.3s">
+                <h2 class="card-header cinzel">⚠ WHAT YOUR BODY IS MISSING</h2>
+                <div class="pill-container" id="deficiencies-box" aria-label="Nutrient Deficiencies"></div>
+            </div>
+
+            <div class="section-card fade-in-up" style="animation-delay: 0.4s">
+                <h2 class="card-header cinzel">☠ YOUR BODY'S FUTURE IF YOU CONTINUE</h2>
+                <div id="risks-box" aria-label="Health Risks Predictions"></div>
+            </div>
+
+            <div class="section-card fade-in-up" style="animation-delay: 0.5s">
+                <h2 class="card-header cinzel">🍳 WHAT YOU CAN MAKE RIGHT NOW</h2>
+                <div class="recipes-grid" id="recipes-box" aria-label="Survival Recipes list"></div>
+            </div>
+
+            <div class="section-card fade-in-up" style="animation-delay: 0.6s">
+                <h2 class="card-header cinzel">📅 YOUR BODY OVER TIME</h2>
+                <div class="body-timeline-grid" id="body-time-box" aria-label="Body impact timeline predictions"></div>
+            </div>
+
+            <div class="section-card fade-in-up" style="animation-delay: 0.7s">
+                <h2 class="card-header cinzel">🗓 ORACLE'S DAILY PLAN FOR YOU</h2>
+                <div class="meal-grid" id="meal-plan-box" aria-label="Daily Meal Plan"></div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <div>Built with Google Gemini AI + Cloud Run 🥗</div>
+        <div style="margin-top: 5px;">NUTRI-ORACLE v1.0 &mdash; The Oracle Sees All</div>
+    </footer>
+
+    <div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+
+    <script>
+        // State
+        let base64Image = null;
+
+        // UI toggles
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => {
+                t.classList.remove('active')
+                t.setAttribute('aria-selected', 'false');
+            });
+            const selBtn = document.getElementById(`tab-${tab}`);
+            selBtn.classList.add('active');
+            selBtn.setAttribute('aria-selected', 'true');
+            
+            document.getElementById('section-type').style.display = tab === 'type' ? 'block' : 'none';
+            document.getElementById('section-scan').style.display = tab === 'scan' ? 'block' : 'none';
+        }
+
+        // Image Handling
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const imgPreview = document.getElementById('image-preview');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+        });
+
+        dropZone.addEventListener('drop', handleDrop, false);
+        fileInput.addEventListener('change', function() { handleFiles(this.files); }, false);
+
+        function handleDrop(e) { handleFiles(e.dataTransfer.files); }
+
+        function handleFiles(files) {
+            if (files.length === 0) return;
+            const file = files[0];
+            if (!file.type.startsWith('image/')) {
+                showToast("The Oracle only accepts uncorrupted image files.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                base64Image = e.target.result;
+                imgPreview.src = base64Image;
+                imgPreview.style.display = 'inline-block';
+                dropZone.querySelector('p').style.display = 'none';
+                dropZone.querySelector('.upload-icon').style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+
+        // Loading Messages
+        const msgCycle = [
+            "Oracle is reading your kitchen...",
+            "Calculating your body's future...",
+            "Scanning for hidden deficiencies...",
+            "Preparing your verdict..."
+        ];
+        let msgInterv;
+
+        function toggleLoading(show) {
+            const load = document.getElementById('loading');
+            const msgEl = document.getElementById('loading-msg');
+            if (show) {
+                load.classList.add('active');
+                load.setAttribute('aria-hidden', 'false');
+                let i = 0;
+                msgEl.innerText = msgCycle[0];
+                msgInterv = setInterval(() => {
+                    i = (i + 1) % msgCycle.length;
+                    msgEl.innerText = msgCycle[i];
+                }, 2000);
+            } else {
+                load.classList.remove('active');
+                load.setAttribute('aria-hidden', 'true');
+                clearInterval(msgInterv);
+            }
+        }
+
+        async function consultOracle(type) {
+            const url = type === 'type' ? '/analyze-ingredients' : '/analyze-image';
+            let payload = {};
+
+            if (type === 'type') {
+                const text = document.getElementById('ingredients-input').value;
+                if (!text.trim()) {
+                    showToast("Provide your ingredients before seeking guidance.");
+                    return;
+                }
+                const list = text.split(',').map(i => i.trim()).filter(i => i).slice(0, 50);
+                payload = {
+                    ingredients: list,
+                    age: parseInt(document.getElementById('age-input').value || 25),
+                    goal: document.getElementById('goal-input').value
+                };
+            } else {
+                if (!base64Image) {
+                    showToast("Offer an image of your provisions first.");
+                    return;
+                }
+                payload = { image_base64: base64Image };
+            }
+
+            document.getElementById('results').classList.remove('active');
+
+            toggleLoading(true);
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.detail || 'The Oracle connection fractured.');
+                }
+                
+                const data = await res.json();
+                renderResults(data);
+                
+                // Auto scroll to results
+                setTimeout(() => {
+                    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+
+            } catch (err) {
+                showToast(err.message);
+                console.error(err);
+            } finally {
+                toggleLoading(false);
+            }
+        }
+
+        // Emojis mapping
+        const em = {
+            "iron": "🩸", "calcium": "🦴", "vitamin d": "☀️", "protein": "💪", 
+            "vitamin c": "🍊", "zinc": "⚡", "omega": "🐟", "fiber": "🌾", 
+            "b12": "🧠", "magnesium": "✨"
+        };
+        
+        function getEmoji(txt) {
+            const l = txt.toLowerCase();
+            for(const k in em) { if(l.includes(k)) return em[k]; }
+            return "⚠️";
+        }
+
+        function setRing(id, val, max, color) {
+            const circle = document.getElementById(id);
+            const valEl = document.getElementById(id.replace('ring', 'val'));
+            const c = Math.PI * (70 * 2);
+            circle.style.strokeDasharray = c;
+            
+            // Trigger reflow
+            void circle.offsetWidth;
+            
+            const pct = Math.max(0, Math.min(100, (val / max) * 100));
+            const offset = c - (pct / 100) * c;
+            
+            circle.style.stroke = color;
+            valEl.style.color = color;
+            
+            setTimeout(() => {
+                circle.style.strokeDashoffset = offset;
+                animateValue(valEl, 0, val, 2000);
+            }, 100);
+        }
+
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) window.requestAnimationFrame(step);
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        function getColorByScore(score) {
+            if (score > 69) return "var(--primary)";
+            if (score > 39) return "var(--warning)";
+            return "var(--danger)";
+        }
+
+        function toggleSteps(id) {
+            const ul = document.getElementById(id);
+            const btn = document.querySelector(`[aria-controls="${id}"]`);
+            const isActive = ul.classList.contains('active');
+            
+            if (isActive) {
+                ul.classList.remove('active');
+                btn.setAttribute('aria-expanded', 'false');
+                btn.innerHTML = `<span>▶</span> View Steps`;
+            } else {
+                ul.classList.add('active');
+                btn.setAttribute('aria-expanded', 'true');
+                btn.innerHTML = `<span>▼</span> Hide Steps`;
+            }
+        }
+
+        function renderResults(d) {
+            const resBox = document.getElementById('results');
+            resBox.classList.remove('active');
+            // Trigger reflow to restart animations
+            void resBox.offsetWidth;
+            resBox.classList.add('active');
+
+            // 1. Verdict
+            const vb = document.getElementById('verdict-banner');
+            vb.style.background = `radial-gradient(circle at center, ${d.aura_color} 0%, rgba(0,0,0,1) 120%)`;
+            vb.style.border = `2px solid ${d.aura_color}`;
+            document.getElementById('verdict-text').innerText = d.oracle_verdict;
+
+            // 2. Orbs
+            const scColor = getColorByScore(d.vitality_score);
+            setRing('vitality-ring', d.vitality_score, 100, scColor);
+            setRing('risks-ring', d.health_risks.length, 10, "var(--danger)");
+            setRing('recipes-ring', d.survival_recipes.length, 10, "var(--purple)");
+
+            // 3. Deficiencies
+            const defBox = document.getElementById('deficiencies-box');
+            if(d.deficiencies.length === 0) {
+                defBox.innerHTML = `<span style="color:var(--primary); font-style:italic;">No immediate deficiencies detected... yet.</span>`;
+            } else {
+                defBox.innerHTML = d.deficiencies.map(x => `
+                    <div class="pill">${getEmoji(x)} ${x}</div>
+                `).join('');
+            }
+
+            // 4. Risks
+            const rbox = document.getElementById('risks-box');
+            if(d.health_risks.length === 0) {
+                rbox.innerHTML = `<span style="color:var(--primary); font-style:italic;">You walk a safe path... for now.</span>`;
+            } else {
+                rbox.innerHTML = d.health_risks.map(r => {
+                    const s = r.severity.toLowerCase();
+                    const cls = s === 'high' ? 'sev-high' : (s === 'medium' ? 'sev-medium' : 'sev-low');
+                    return `
+                    <div class="timeline-item" tabindex="0">
+                        <div class="severity-badge ${cls}">${r.severity}</div>
+                        <div class="risk-details">
+                            <div class="risk-name">${r.risk}</div>
+                            <div class="risk-meta">Manifests in: ${r.timeline}</div>
+                            <div class="risk-tip">Prevention: ${r.prevention}</div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            }
+
+            // 5. Recipes
+            const recBox = document.getElementById('recipes-box');
+            recBox.innerHTML = d.survival_recipes.map((r, i) => `
+                <div class="recipe-card">
+                    <div class="recipe-name cinzel">${r.name}</div>
+                    <div class="recipe-meta">
+                        <div class="badge-time">⏱️ ${r.prep_time}</div>
+                        <div class="badge-health">🌿 ${r.health_benefit}</div>
+                    </div>
+                    <div class="recipe-tags">
+                        ${r.ingredients_used.map(ing => `<span class="tag">${ing}</span>`).join('')}
+                    </div>
+                    <button class="steps-toggle" aria-expanded="false" aria-controls="steps-${i}" onclick="toggleSteps('steps-${i}')">
+                        <span>▶</span> View Steps
+                    </button>
+                    <ul class="recipe-steps" id="steps-${i}">
+                        ${r.steps.map(s => `<li>${s}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+
+            // 6. Body Timeline
+            let tClass7 = "green"; let icon7 = "📅";
+            let tClass30 = "orange"; let icon30 = "⏳";
+            let tClass6m = "red"; let icon6m = "🔮";
+            
+            // Simple logic to color-code based on score roughly
+            if(d.vitality_score > 70) {
+                tClass7 = "green"; tClass30 = "green"; tClass6m = "green";
+                icon7 = "🌿"; icon30 = "💪"; icon6m = "🌟";
+            } else if(d.vitality_score > 40) {
+                tClass7 = "green"; tClass30 = "orange"; tClass6m = "orange";
+                icon7 = "⚖️"; icon30 = "⏳"; icon6m = "⚠️";
+            } else {
+                tClass7 = "orange"; tClass30 = "red"; tClass6m = "red";
+                icon7 = "⚠️"; icon30 = "📉"; icon6m = "☠️";
+            }
+
+            const btBox = document.getElementById('body-time-box');
+            btBox.innerHTML = `
+                <div class="bt-card ${tClass7}">
+                    <div class="bt-icon">${icon7}</div>
+                    <div class="bt-title">7 Days</div>
+                    <div class="bt-text">${d.body_timeline["7_days"] || d.body_timeline["7 days" ] || d.body_timeline.seven_days}</div>
+                </div>
+                <div class="bt-card ${tClass30}">
+                    <div class="bt-icon">${icon30}</div>
+                    <div class="bt-title">30 Days</div>
+                    <div class="bt-text">${d.body_timeline["30_days"] || d.body_timeline["30 days"] || d.body_timeline.thirty_days}</div>
+                </div>
+                <div class="bt-card ${tClass6m}">
+                    <div class="bt-icon">${icon6m}</div>
+                    <div class="bt-title">6 Months</div>
+                    <div class="bt-text">${d.body_timeline["6_months"] || d.body_timeline["6 months"] || d.body_timeline.six_months}</div>
+                </div>
+            `;
+
+            // 7. Meal Plan
+            const mp = d.meal_plan;
+            const mpBox = document.getElementById('meal-plan-box');
+            let mealsHTML = '';
+            for(const [key, val] of Object.entries(mp)) {
+                mealsHTML += `
+                    <div class="meal-card" tabindex="0">
+                        <div class="meal-time">${key.toUpperCase()}</div>
+                        <div class="meal-name cinzel">${val.meal}</div>
+                        <div class="meal-ingredients">
+                            ${val.ingredients_from_your_kitchen.map(ing => `<span class="tag">${ing}</span>`).join('')}
+                        </div>
+                        <div class="meal-why">"${val.why}"</div>
+                    </div>
+                `;
+            }
+            mpBox.innerHTML = mealsHTML;
+        }
+
+        // Fetch daily tip quietly
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await fetch('/quick-tip');
+                if (res.ok) {
+                    const data = await res.json();
+                    console.log("Oracle Tip: " + data.tip);
+                    // Could show as a tiny banner at top, but let's just log it or add title
+                    document.querySelector('.status').setAttribute('title', data.tip);
+                }
+            } catch(e) {}
+        });
+
+    </script>
+</body>
+</html>
